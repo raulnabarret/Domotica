@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Proyecto de Domotica</title>
+        <link href='https://necolas.github.io/normalize.css/3.0.2/normalize.css' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+        <script>
+		strLED1 = "";
+		strLED2 = "";
+		strLED3 = "";
+		strLED4 = "";
+		var LED3_state = 0;
+		var LED4_state = 0;
+
+		function GetArduinoIO()
+		{
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
+			{
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						if (this.responseXML != null) {
+							// XML file received - contains analog values, switch values and LED states
+							var count;
+							// get analog inputs
+							var num_an = this.responseXML.getElementsByTagName('analog').length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("analog")[count].innerHTML =
+									this.responseXML.getElementsByTagName('analog')[count].childNodes[0].nodeValue;
+							}
+							// get switch inputs
+							var num_an = this.responseXML.getElementsByTagName('switch').length;
+							for (count = 0; count < num_an; count++) {
+								document.getElementsByClassName("switches")[count].innerHTML =
+									this.responseXML.getElementsByTagName('switch')[count].childNodes[0].nodeValue;
+							}
+							// LED 1
+							if (this.responseXML.getElementsByTagName('LED')[0].childNodes[0].nodeValue === "checked") {
+								document.LED_form.LED1.checked = true;
+							}
+							else {
+								document.LED_form.LED1.checked = false;
+							}
+							// LED 2
+							if (this.responseXML.getElementsByTagName('LED')[1].childNodes[0].nodeValue === "checked") {
+								document.LED_form.LED2.checked = true;
+							}
+							else {
+								document.LED_form.LED2.checked = false;
+							}
+							// LED 3
+							if (this.responseXML.getElementsByTagName('LED')[2].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED3").innerHTML = "LED 3 is ON (D8)";
+								LED3_state = 1;
+							}
+							else {
+								document.getElementById("LED3").innerHTML = "LED 3 is OFF (D8)";
+								LED3_state = 0;
+							}
+							// LED 4
+							if (this.responseXML.getElementsByTagName('LED')[3].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED4").innerHTML = "LED 4 is ON (D9)";
+								LED4_state = 1;
+							}
+							else {
+								document.getElementById("LED4").innerHTML = "LED 4 is OFF (D9)";
+								LED4_state = 0;
+							}
+						}
+					}
+				}
+			}
+			// send HTTP GET request with LEDs to switch on/off if any
+			request.open("GET", "ajax_inputs" + strLED1 + strLED2 + strLED3 + strLED4 + nocache, true);
+			request.send(null);
+			setTimeout('GetArduinoIO()', 1000);
+			strLED1 = "";
+			strLED2 = "";
+			strLED3 = "";
+			strLED4 = "";
+		}
+		// service LEDs when checkbox checked/unchecked
+		function GetCheck()
+		{
+			if (LED_form.LED1.checked) {
+				strLED1 = "&LED1=1";
+			}
+			else {
+				strLED1 = "&LED1=0";
+			}
+			if (LED_form.LED2.checked) {
+				strLED2 = "&LED2=1";
+			}
+			else {
+				strLED2 = "&LED2=0";
+			}
+		}
+		function GetButton1()
+		{
+			if (LED3_state === 1) {
+				LED3_state = 0;
+				strLED3 = "&LED3=0";
+			}
+			else {
+				LED3_state = 1;
+				strLED3 = "&LED3=1";
+			}
+		}
+		function GetButton2()
+		{
+			if (LED4_state === 1) {
+				LED4_state = 0;
+				strLED4 = "&LED4=0";
+			}
+			else {
+				LED4_state = 1;
+				strLED4 = "&LED4=1";
+			}
+		}
+	</script>
+	<style>
+		html{
+			font-size: 14px;
+			font-family: 'Open Sans';
+			height: 100%;
+			width: 100%;
+		}
+		section{
+			background: #f7f7f7;
+		}
+		.container{
+			float: left;
+			background: #d4d8d4;
+			display: inline-block;
+			height: 100px;
+			margin: 2em 0em 0em 2em;
+			width: 600px;
+		}
+		.header{
+			background: #5588ff;
+			width: 100%;
+			height: 150px;
+		}
+		h1 {
+			margin: 0;
+			font-size: 2.8em;
+			font-weight: 700;
+			color: white;
+			text-align: center;
+			padding-top: 60px;
+		}
+		h2 {
+			text-align: center;
+			font-size: 1.2em;
+			color: #555555;
+		}
+		p, form, button {
+			text-align: center;
+			color: gray;
+		}
+		button{
+			margin-left: 235px;
+		}
+	</style>
+    </head>
+    <body onload="GetArduinoIO()">
+    	<header class="header">
+    		        <h1>Proyecto de Domotica</h1>
+    	</header>
+    	<section>
+    		<div class="container">
+			<h2>Analog Inputs</h2>
+			<!--<p class="small_text">A0 used by Ethernet shield</p>-->
+			<!--<p class="small_text">A1 used by Ethernet shield</p>-->
+			<p>A2: <span class="analog">...</span></p>
+			<!--<p>A3: <span class="analog">...</span></p>-->
+			<!--<p>A4: <span class="analog">...</span></p>-->
+			<!--<p>A5: <span class="analog">...</span></p>-->
+		</div>
+		<div class="container">
+			<h2>Lights I/O</h2>
+			<button type="button" id="LED3" onclick="GetButton1()">LED 3 is OFF (D8)</button><br /><br />
+			<!--<button type="button" id="LED4" onclick="GetButton2()">LED 4 is OFF (D9)</button><br /><br/>-->
+			<!--<p class="small_text">D10 to D13 used by Ethernet shield</p>-->
+		</div>
+		<section>
+    		<div class="container">
+			<h2>Analog Inputs</h2>
+			<!--<p class="small_text">A0 used by Ethernet shield</p>-->
+			<!--<p class="small_text">A1 used by Ethernet shield</p>-->
+			<p>A2: <span class="analog">...</span></p>
+			<!--<p>A3: <span class="analog">...</span></p>-->
+			<!--<p>A4: <span class="analog">...</span></p>-->
+			<!--<p>A5: <span class="analog">...</span></p>-->
+		</div>
+		<div class="container">
+			<h2>Lights I/O</h2>
+			<button type="button" id="LED3" onclick="GetButton1()">LED 3 is OFF (D8)</button><br /><br />
+			<!--<button type="button" id="LED4" onclick="GetButton2()">LED 4 is OFF (D9)</button><br /><br/>-->
+			<!--<p class="small_text">D10 to D13 used by Ethernet shield</p>-->
+		</div>
+    	</section>
+        
+    </body>
+</html>
