@@ -1,0 +1,17 @@
+commit d8f676001fa2459816db9fed5175a99bc4d1d31c
+Author: raulnabarret <raulnabarret@gmail.com>
+Date:   Thu Apr 16 00:42:03 2015 -0500
+
+    Pagina web y estilos del cliente
+
+commit 79d69753db27eac0f442e33c5a3f60090147c9d7
+Author: raulnabarret <raulnabarret@gmail.com>
+Date:   Thu Apr 16 00:41:26 2015 -0500
+
+    Documento del segundo avance del proyecto
+
+commit 4bc0be72e9b8833cd9905310e5f4449b1739cca8
+Author: raulnabarret <raulnabarret@gmail.com>
+Date:   Thu Apr 16 00:40:35 2015 -0500
+
+    Programa de Arduino para usar la tarjeta como servidor y leer pagina web desde tarjeta SD
